@@ -27,9 +27,11 @@
     "verify": "strapi-plugin verify"
   },
   "dependencies": {
-    "@strapi/design-system": "^2.0.0-rc.30",
-    "@strapi/icons": "^2.0.0-rc.30",
-    "react-intl": "^8.1.1"
+    "@strapi/design-system": "^2.1.2",
+    "@strapi/icons": "^2.1.2",
+    "axios": "^1.13.3",
+    "react-intl": "^8.1.1",
+    "stripe": "^20.2.0"
   },
   "devDependencies": {
     "@strapi/sdk-plugin": "^5.4.0",

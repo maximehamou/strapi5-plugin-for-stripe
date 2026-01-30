@@ -1,5 +1,5 @@
-import controller from './controller';
+import stripeController from './stripeController';
 
 export default {
-  controller,
+  stripeController,
 };

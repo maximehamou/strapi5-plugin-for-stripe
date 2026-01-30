@@ -1,5 +1,5 @@
-import service from './service';
+import stripeService from './stripeService';
 
 export default {
-  service,
+  stripeService,
 };
