@@ -1,4 +1,10 @@
 export default () => ({
   type: "content-api",
-  routes: [],
+  routes: [
+    {
+      method: "POST",
+      path: "/checkout",
+      handler: "stripeController.checkout",
+    },
+  ],
 });

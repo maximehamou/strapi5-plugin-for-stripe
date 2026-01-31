@@ -122,30 +122,44 @@ const stripeController = ({ strapi }) => ({
     const service = await this.stripeService();
     const stripe = service.stripeClient(settings.environment || "test");
 
-    const now = Math.floor(Date.now() / 1000);
-    const payload = ctx.request.body;
+    const {
+      priceId,
+      customer_email,
+      productId,
+      productName,
+      metadata = {},
+    } = ctx.request.body;
+
+    if (!priceId || !customer_email) {
+      ctx.throw(400, "Missing priceId or customer_email");
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: [{ price: payload.priceId, quantity: 1 }],
 
-      success_url: settings.checkout.successUrl,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+
+      customer_email,
+
+      success_url:
+        settings.checkout.successUrl + "?sessionId={CHECKOUT_SESSION_ID}",
       cancel_url: settings.checkout.cancelUrl,
 
-      customer_email: payload.customer_email,
-      expires_at: now + payload.expires_in,
-
       metadata: {
-        productId: payload.productId,
-        productName: payload.productName,
-        begins_from: payload.begins_from,
-        ends_to: payload.ends_to,
-        location: payload.location,
-        authenticated: String(payload.authenticated),
+        productId,
+        productName,
+        ...metadata,
       },
     });
 
-    ctx.body = { url: session.url };
+    ctx.body = {
+      url: session.url,
+    };
   },
 
   /* ============================

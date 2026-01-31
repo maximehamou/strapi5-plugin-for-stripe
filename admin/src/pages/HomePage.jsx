@@ -553,53 +553,42 @@ const HomePage = () => {
                   marginTop={2}
                 >
                   <pre>
-                    {`
-window.addEventListener('load', () => {
-  document.querySelectorAll('[data-stripe-checkout]').forEach((btn) => {
-    btn.addEventListener('click', () => checkout(btn));
+                    {`<script>
+  window.addEventListener('load', () => {
+    document.querySelectorAll('[data-stripe-checkout]').forEach((btn) => {
+      btn.addEventListener('click', () => checkout(btn));
+    });
+
+    const sessionId = new URLSearchParams(location.search).get('session_id');
+    if (sessionId) retrieve(sessionId);
   });
 
-  const sessionId = new URLSearchParams(location.search).get('session_id');
-  if (sessionId) retrieve(sessionId);
-});
+  function checkout(btn) {
+    const apiUrl = btn.dataset.apiUrl;
+    const priceId = btn.dataset.priceId;
 
-function checkout(btn) {
-  const apiUrl = btn.dataset.apiUrl;
-  const priceId = btn.dataset.priceId;
+    if (!apiUrl || !priceId) return;
 
-  if (!apiUrl || !priceId) return;
+    const metadata = {};
+    Object.keys(btn.dataset).forEach((k) => {
+      if (k.startsWith('metadata')) {
+        metadata[k.replace('metadata', '').toLowerCase()] = btn.dataset[k];
+      }
+    });
 
-  const metadata = {};
-  Object.keys(btn.dataset).forEach((k) => {
-    if (k.startsWith('metadata')) {
-      metadata[k.replace('metadata', '').toLowerCase()] = btn.dataset[k];
-    }
-  });
-
-  localStorage.setItem('stripeApiUrl', apiUrl);
-
-  fetch(apiUrl + "/strapi5-plugin-stripe/checkout", {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      priceId,
-      email: btn.dataset.email,
-      metadata,
-    }),
-  })
-    .then((r) => r.json())
-    .then((r) => r.url && (location.href = r.url));
-}
-
-function retrieve(sessionId) {
-  const apiUrl = localStorage.getItem('stripeApiUrl');
-  if (!apiUrl) return;
-
-  fetch(
-    apiUrl + "/strapi5-plugin-stripe/retrieveCheckoutSession/" + sessionId,
-    { headers: { isfromcheckout: 'true' } },
-  );
-}`}
+    fetch(apiUrl + "/api/strapi5-plugin-stripe/checkout", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        priceId,
+        customer_email: btn.dataset.email,
+        metadata,
+      }),
+    })
+      .then((r) => r.json())
+      .then((r) => r.url && (location.href = r.url));
+  }
+</script>`}
                   </pre>
                 </Box>
 
@@ -635,9 +624,9 @@ function retrieve(sessionId) {
 
                   <Typography variant="pi">
                     <br />• <b>priceId</b> identifies the product price
-                    <br />
-                    • Metadata is optional and available in webhooks
-                    <br />• Redirect is handled automatically by Stripe
+                    <br />• Metadata is optional and available in webhooks
+                    <br />• Redirect is handled automatically by Stripe, with
+                    the session ID as a query parameter
                   </Typography>
                 </Box>
               </Box>
