@@ -203,6 +203,13 @@ const HomePage = () => {
     loadProducts();
   };
 
+  const currencySymbol = (price) => {
+    if (price.currency === "eur") return "€";
+    if (price.currency === "usd") return "$";
+    if (price.currency === "gbp") return "£";
+    if (price.currency === "cad") return "CA$";
+  };
+
   return (
     <Box padding={8}>
       <Flex
@@ -251,7 +258,9 @@ const HomePage = () => {
                   </Typography>
                 </Td>
                 <Td>
-                  <Typography>{elm.unit_amount / 100} €</Typography>
+                  <Typography>
+                    {elm.unit_amount / 100} {currencySymbol(elm)}
+                  </Typography>
                 </Td>
                 <Td>
                   <Typography>
@@ -484,7 +493,7 @@ const HomePage = () => {
                   <Button
                     onClick={() =>
                       mode === "create"
-                        ? createProduct
+                        ? createProduct()
                         : updateProduct(
                             productsAndPrices.products[editingIndex],
                             productsAndPrices.prices[editingIndex],

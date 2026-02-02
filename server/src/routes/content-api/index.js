@@ -6,5 +6,13 @@ export default () => ({
       path: "/checkout",
       handler: "stripeController.checkout",
     },
+    {
+      method: "POST",
+      path: "/webhook",
+      handler: "stripeController.webhook",
+      config: {
+        auth: false,
+      },
+    },
   ],
 });

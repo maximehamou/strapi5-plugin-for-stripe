@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const stripeController = ({ strapi }) => ({
   async stripeService() {
     return strapi.plugin("strapi5-plugin-stripe").service("stripeService");
@@ -169,37 +171,37 @@ const stripeController = ({ strapi }) => ({
   async webhook(ctx) {
     const settings = await this.getSettingsInternal();
     const service = await this.stripeService();
+    const stripe = service.stripeClient(settings.environment || "test");
 
-    const env = settings.environment || "test";
+    const signature = ctx.request.headers["stripe-signature"];
+    const webhookSecret = process.env.STRAPI_ADMIN_STRIPE_WEBHOOK_SECRET_KEY;
     const forwardUrl = settings.webhook?.forwardUrl;
 
-    if (!forwardUrl) {
-      throw new Error("No webhook forward URL configured");
+    if (!signature || !webhookSecret) {
+      ctx.throw(400, "Webhook configuration missing");
     }
 
-    // HTTPS only in live
-    const parsed = new URL(forwardUrl);
-    if (env === "live" && parsed.protocol !== "https:") {
-      throw new Error("Webhook forward URL must be HTTPS in live mode");
+    const rawBody =
+      ctx.request.body?.[Symbol.for("unparsedBody")] ?? ctx.request.body;
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
+    } catch (err) {
+      ctx.throw(400, "Invalid Stripe webhook signature");
     }
 
-    // 1. Verify Stripe signature
-    const event = service.verifyWebhook({ ctx, env });
-
-    // 2. WEBHOOK EVENTS (avoid duplicate)
-    if (await service.isDuplicateEvent(event.id)) {
-      ctx.body = { received: true };
-      return;
+    if (forwardUrl) {
+      await axios.post(forwardUrl, event, {
+        headers: {
+          "Content-Type": "application/json",
+          "Stripe-Event-Id": event.id,
+          "Stripe-Event-Type": event.type,
+        },
+        timeout: 10000,
+      });
     }
-
-    await service.storeEvent(event);
-
-    // 3. Forward raw event + original signature
-    await service.forwardEvent({
-      url: forwardUrl,
-      rawBody: ctx.request.body,
-      signature: ctx.request.headers["stripe-signature"],
-    });
 
     ctx.body = { received: true };
   },
