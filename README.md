@@ -15,7 +15,7 @@ A Strapi 5 plugin to manage **Stripe products and subscriptions** directly from 
   - [🔗 2) Stripe Webhook Endpoint URL](#-2-stripe-webhook-endpoint-url)
   - [🔐 3) Create a Webhook endpoint in Stripe (to get the webhook secret)](#-3-create-a-webhook-endpoint-in-stripe-to-get-the-webhook-secret)
   - [🧪 4) Local development (no public URL)](#-4-local-development-no-public-url)
-- [⚙️ Configuration](#-configuration)
+- [⚙️ Configuration](#️-configuration)
 - [📦 Managing Products](#-managing-products)
 - [🧑‍💻 Embed Payment Button Code](#-embed-payment-button-code)
 - [📝 License](#-license)

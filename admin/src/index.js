@@ -10,7 +10,7 @@ export default {
       icon: PluginIcon,
       intlLabel: {
         id: `${PLUGIN_ID}.plugin.name`,
-        defaultMessage: "Strapi 5 Plugin Stripe",
+        defaultMessage: "Strapi 5 Plugin for Stripe",
       },
       Component: async () => {
         const { App } = await import("./pages/App");
@@ -23,7 +23,7 @@ export default {
       id: PLUGIN_ID,
       initializer: Initializer,
       isReady: false,
-      name: "Strapi 5 Plugin Stripe",
+      name: "Strapi 5 Plugin for Stripe",
     });
 
     app.createSettingSection(

@@ -52,20 +52,20 @@
   },
   "strapi": {
     "kind": "plugin",
-    "name": "strapi5-plugin-stripe",
-    "displayName": "Strapi 5 Plugin Stripe",
+    "name": "strapi5-plugin-for-stripe",
+    "displayName": "Strapi 5 Plugin for Stripe",
     "description": "Accept Stripe Payments with Strapi 5"
   },
-  "name": "strapi5-plugin-stripe",
+  "name": "strapi5-plugin-for-stripe",
   "description": "Accept Stripe Payments with Strapi 5",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/maximehamou/strapi5-plugin-stripe.git"
+    "url": "git+ssh://git@github.com/maximehamou/strapi5-plugin-for-stripe.git"
   },
   "bugs": {
-    "url": "https://github.com/maximehamou/strapi5-plugin-stripe/issues"
+    "url": "https://github.com/maximehamou/strapi5-plugin-for-stripe/issues"
   },
-  "homepage": "https://github.com/maximehamou/strapi5-plugin-stripe#readme",
+  "homepage": "https://github.com/maximehamou/strapi5-plugin-for-stripe#readme",
   "author": "Maxime Hamou <contact@mh-info.fr>"
 }
