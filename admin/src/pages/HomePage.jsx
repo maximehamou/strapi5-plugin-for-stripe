@@ -16,6 +16,7 @@ import {
   Td,
   IconButton,
   IconButtonGroup,
+  Alert,
 } from "@strapi/design-system";
 import { Trash, Pencil, CodeBlock } from "@strapi/icons";
 import { useFetchClient } from "@strapi/strapi/admin";
@@ -43,6 +44,9 @@ const HomePage = () => {
   const [price, setPrice] = useState(0);
   const [paymentInterval, setPaymentInterval] = useState("");
   const [trialPeriodDays, setTrialPeriodDays] = useState(0);
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const isSubscription = paymentType === "subscription";
 
@@ -107,76 +111,16 @@ const HomePage = () => {
   };
 
   const createProduct = async () => {
-    await post("/strapi5-plugin-stripe/products", {
-      currency: settings.currency,
-      unit_amount: price * 100,
-      product_data: {
-        name: name,
-      },
-      ...(isSubscription && {
-        recurring: {
-          interval:
-            paymentInterval.includes("2") || paymentInterval.includes("6")
-              ? paymentInterval.slice(1, paymentInterval.length - 1)
-              : paymentInterval,
-          interval_count: paymentInterval.includes("2")
-            ? "2"
-            : paymentInterval.includes("6")
-              ? "6"
-              : null,
-          trial_period_days: isSubscription ? trialPeriodDays : null,
-        },
-      }),
-    });
+    setError("");
+    setSuccess("");
 
-    setIsModalOpen(false);
-    resetForm();
-    loadProducts();
-  };
-
-  const deleteProduct = async (productId, priceId) => {
-    await del(`/strapi5-plugin-stripe/products/${productId}&${priceId}`);
-    loadProducts();
-  };
-
-  const updateProduct = async (productArr, priceArr) => {
-    let productUpdate = {};
-    let mustCreateNewPrice = false;
-
-    if (name !== productArr.name) {
-      productUpdate.name = name;
-    }
-
-    if (Object.keys(productUpdate).length > 0) {
-      await put(
-        `/strapi5-plugin-stripe/products/${productArr.id}`,
-        productUpdate,
-      );
-    }
-
-    if (priceArr.unit_amount !== price * 100) {
-      mustCreateNewPrice = true;
-    }
-
-    if (priceArr.recurring) {
-      const currentInterval = priceArr.recurring.interval_count
-        ? `${priceArr.recurring.interval_count}${priceArr.recurring.interval}s`
-        : priceArr.recurring.interval;
-
-      if (currentInterval !== paymentInterval) {
-        mustCreateNewPrice = true;
-      }
-
-      if (priceArr.recurring.trial_period_days !== trialPeriodDays) {
-        mustCreateNewPrice = true;
-      }
-    }
-
-    if (mustCreateNewPrice) {
-      const newPrice = await post("/strapi5-plugin-stripe/products", {
-        currency: priceArr.currency,
+    try {
+      await post("/strapi5-plugin-stripe/products", {
+        currency: settings.currency,
         unit_amount: price * 100,
-        product: productArr.id,
+        product_data: {
+          name: name,
+        },
         ...(isSubscription && {
           recurring: {
             interval:
@@ -184,23 +128,123 @@ const HomePage = () => {
                 ? paymentInterval.slice(1, paymentInterval.length - 1)
                 : paymentInterval,
             interval_count: paymentInterval.includes("2")
-              ? 2
+              ? "2"
               : paymentInterval.includes("6")
-                ? 6
-                : undefined,
-            trial_period_days: trialPeriodDays || undefined,
+                ? "6"
+                : null,
+            trial_period_days: isSubscription ? trialPeriodDays : null,
           },
         }),
       });
 
-      await del(
-        `/strapi5-plugin-stripe/prices/${productArr.id}&${priceArr.id}&${newPrice.data.id}`,
+      setSuccess("Product created successfully.");
+      setIsModalOpen(false);
+      resetForm();
+      loadProducts();
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "An unexpected error occurred.",
       );
     }
+  };
 
-    setIsModalOpen(false);
-    resetForm();
-    loadProducts();
+  const deleteProduct = async (productId, priceId) => {
+    setError("");
+    setSuccess("");
+
+    try {
+      await del(`/strapi5-plugin-stripe/products/${productId}&${priceId}`);
+      setSuccess("Product deleted successfully.");
+      loadProducts();
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "An unexpected error occurred.",
+      );
+    }
+  };
+
+  const updateProduct = async (productArr, priceArr) => {
+    setError("");
+    setSuccess("");
+
+    try {
+      let productUpdate = {};
+      let mustCreateNewPrice = false;
+
+      if (name !== productArr.name) {
+        productUpdate.name = name;
+      }
+
+      if (Object.keys(productUpdate).length > 0) {
+        await put(
+          `/strapi5-plugin-stripe/products/${productArr.id}`,
+          productUpdate,
+        );
+      }
+
+      if (priceArr.unit_amount !== price * 100) {
+        mustCreateNewPrice = true;
+      }
+
+      if (priceArr.recurring) {
+        const currentInterval = priceArr.recurring.interval_count
+          ? `${priceArr.recurring.interval_count}${priceArr.recurring.interval}s`
+          : priceArr.recurring.interval;
+
+        if (currentInterval !== paymentInterval) {
+          mustCreateNewPrice = true;
+        }
+
+        if (priceArr.recurring.trial_period_days !== trialPeriodDays) {
+          mustCreateNewPrice = true;
+        }
+      }
+
+      if (mustCreateNewPrice) {
+        const newPrice = await post("/strapi5-plugin-stripe/products", {
+          currency: priceArr.currency,
+          unit_amount: price * 100,
+          product: productArr.id,
+          ...(isSubscription && {
+            recurring: {
+              interval:
+                paymentInterval.includes("2") || paymentInterval.includes("6")
+                  ? paymentInterval.slice(1, paymentInterval.length - 1)
+                  : paymentInterval,
+              interval_count: paymentInterval.includes("2")
+                ? 2
+                : paymentInterval.includes("6")
+                  ? 6
+                  : undefined,
+              trial_period_days: trialPeriodDays || undefined,
+            },
+          }),
+        });
+
+        await del(
+          `/strapi5-plugin-stripe/prices/${productArr.id}&${priceArr.id}&${newPrice.data.id}`,
+        );
+      }
+
+      setSuccess("Product updated successfully.");
+
+      setIsModalOpen(false);
+      resetForm();
+      loadProducts();
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "An unexpected error occurred.",
+      );
+    }
   };
 
   const currencySymbol = (price) => {
@@ -342,6 +386,16 @@ const HomePage = () => {
         </Tbody>
       </Table>
 
+      <Box paddingTop={6}>
+        {success && (
+          <Box paddingBottom={4}>
+            <Alert variant="success" title="Success">
+              {success}
+            </Alert>
+          </Box>
+        )}
+      </Box>
+
       {isModalOpen && (
         <>
           <Box
@@ -477,6 +531,16 @@ const HomePage = () => {
                     />
                   </Box>
                 </Flex>
+              </Box>
+
+              <Box padding={6}>
+                {error && (
+                  <Box paddingBottom={4}>
+                    <Alert variant="danger" title="Action failed">
+                      {error}
+                    </Alert>
+                  </Box>
+                )}
               </Box>
 
               <Box padding={6} background="neutral100">

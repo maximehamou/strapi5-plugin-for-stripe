@@ -8,12 +8,16 @@ import {
   Flex,
   SingleSelect,
   SingleSelectOption,
+  Alert,
 } from "@strapi/design-system";
 import { useFetchClient } from "@strapi/strapi/admin";
 
 const SettingsPage = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const { get, put } = useFetchClient();
 
@@ -27,16 +31,34 @@ const SettingsPage = () => {
         checkout: res.data?.checkout ?? {},
         webhook: res.data?.webhook ?? {},
       });
-
-      console.log(res);
     };
 
     load();
   }, []);
 
   const save = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!data.checkout?.successUrl || !data.checkout?.cancelUrl) {
+      setError("Both Success URL and Cancel URL are required.");
+      return;
+    }
+
     setLoading(true);
-    await put("/strapi5-plugin-stripe/settings", data);
+
+    try {
+      await put("/strapi5-plugin-stripe/settings", data);
+      setSuccess("Settings saved.");
+    } catch (err) {
+      setError(
+        err?.response?.data?.error?.message ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "An unexpected error occurred.",
+      );
+    }
+
     setLoading(false);
   };
 
@@ -153,11 +175,10 @@ const SettingsPage = () => {
                   <SingleSelect
                     value={data.currency || "eur"}
                     onChange={(value) => {
-                      (setData({
+                      setData({
                         ...data,
                         currency: value,
-                      }),
-                        console.log(value));
+                      });
                     }}
                     required
                   >
@@ -179,6 +200,24 @@ const SettingsPage = () => {
             Save
           </Button>
         </Flex>
+
+        <Box paddingTop={6}>
+          {error && (
+            <Box paddingBottom={4}>
+              <Alert variant="danger" title="Save failed">
+                {error}
+              </Alert>
+            </Box>
+          )}
+
+          {success && (
+            <Box paddingBottom={4}>
+              <Alert variant="success" title="Success">
+                {success}
+              </Alert>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Flex>
   );
