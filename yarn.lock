@@ -14815,9 +14815,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strapi5-plugin-stripe@workspace:.":
+"strapi5-plugin-for-stripe@workspace:.":
   version: 0.0.0-use.local
-  resolution: "strapi5-plugin-stripe@workspace:."
+  resolution: "strapi5-plugin-for-stripe@workspace:."
   dependencies:
     "@strapi/design-system": "npm:^2.1.2"
     "@strapi/icons": "npm:^2.1.2"

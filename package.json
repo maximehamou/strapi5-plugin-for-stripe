@@ -1,7 +1,6 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "keywords": [],
-  "type": "commonjs",
   "exports": {
     "./package.json": "./package.json",
     "./strapi-admin": {
@@ -22,6 +21,7 @@
   ],
   "scripts": {
     "build": "strapi-plugin build",
+    "prepack": "yarn build",
     "watch": "strapi-plugin watch",
     "watch:link": "strapi-plugin watch:link",
     "verify": "strapi-plugin verify"
