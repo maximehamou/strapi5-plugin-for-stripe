@@ -2,7 +2,7 @@ import axios from "axios";
 
 const stripeController = ({ strapi }) => ({
   async stripeService() {
-    return strapi.plugin("strapi5-plugin-stripe").service("stripeService");
+    return strapi.plugin("strapi5-plugin-for-stripe").service("stripeService");
   },
 
   /* ============================
@@ -11,7 +11,7 @@ const stripeController = ({ strapi }) => ({
 
   async getSettingsInternal() {
     return await strapi
-      .store({ type: "plugin", name: "strapi5-plugin-stripe" })
+      .store({ type: "plugin", name: "strapi5-plugin-for-stripe" })
       .get({ key: "settings" });
   },
 
@@ -38,7 +38,7 @@ const stripeController = ({ strapi }) => ({
     }
 
     await strapi
-      .store({ type: "plugin", name: "strapi5-plugin-stripe" })
+      .store({ type: "plugin", name: "strapi5-plugin-for-stripe" })
       .set({ key: "settings", value: data });
 
     ctx.body = { ok: true };

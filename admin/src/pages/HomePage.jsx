@@ -60,13 +60,13 @@ const HomePage = () => {
   };
 
   const loadProducts = async () => {
-    const res = await get("/strapi5-plugin-stripe/products");
+    const res = await get("/strapi5-plugin-for-stripe/products");
 
     setProductsAndPrices(res.data);
   };
 
   const getSettings = async () => {
-    const res = await get("/strapi5-plugin-stripe/settings");
+    const res = await get("/strapi5-plugin-for-stripe/settings");
     setSettings(res.data || {});
   };
 
@@ -115,7 +115,7 @@ const HomePage = () => {
     setSuccess("");
 
     try {
-      await post("/strapi5-plugin-stripe/products", {
+      await post("/strapi5-plugin-for-stripe/products", {
         currency: settings.currency,
         unit_amount: price * 100,
         product_data: {
@@ -156,7 +156,7 @@ const HomePage = () => {
     setSuccess("");
 
     try {
-      await del(`/strapi5-plugin-stripe/products/${productId}&${priceId}`);
+      await del(`/strapi5-plugin-for-stripe/products/${productId}&${priceId}`);
       setSuccess("Product deleted successfully.");
       loadProducts();
     } catch (err) {
@@ -183,7 +183,7 @@ const HomePage = () => {
 
       if (Object.keys(productUpdate).length > 0) {
         await put(
-          `/strapi5-plugin-stripe/products/${productArr.id}`,
+          `/strapi5-plugin-for-stripe/products/${productArr.id}`,
           productUpdate,
         );
       }
@@ -207,7 +207,7 @@ const HomePage = () => {
       }
 
       if (mustCreateNewPrice) {
-        const newPrice = await post("/strapi5-plugin-stripe/products", {
+        const newPrice = await post("/strapi5-plugin-for-stripe/products", {
           currency: priceArr.currency,
           unit_amount: price * 100,
           product: productArr.id,
@@ -228,7 +228,7 @@ const HomePage = () => {
         });
 
         await del(
-          `/strapi5-plugin-stripe/prices/${productArr.id}&${priceArr.id}&${newPrice.data.id}`,
+          `/strapi5-plugin-for-stripe/prices/${productArr.id}&${priceArr.id}&${newPrice.data.id}`,
         );
       }
 
@@ -649,7 +649,7 @@ const HomePage = () => {
       }
     });
 
-    fetch(apiUrl + "/api/strapi5-plugin-stripe/checkout", {
+    fetch(apiUrl + "/api/strapi5-plugin-for-stripe/checkout", {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

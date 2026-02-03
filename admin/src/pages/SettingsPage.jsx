@@ -23,7 +23,7 @@ const SettingsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const res = await get("/strapi5-plugin-stripe/settings");
+      const res = await get("/strapi5-plugin-for-stripe/settings");
 
       setData({
         environment: res.data?.environment ?? "test",
@@ -48,7 +48,7 @@ const SettingsPage = () => {
     setLoading(true);
 
     try {
-      await put("/strapi5-plugin-stripe/settings", data);
+      await put("/strapi5-plugin-for-stripe/settings", data);
       setSuccess("Settings saved.");
     } catch (err) {
       setError(

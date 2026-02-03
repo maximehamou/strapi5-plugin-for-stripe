@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="200" height="200" alt="logo_strapi5-plugin-stripe-small" src="https://github.com/user-attachments/assets/3e2503d7-235c-4944-b592-bd742d235447" />
+  <img width="200" height="200" alt="logo_strapi5-plugin-for-stripe-small" src="https://github.com/user-attachments/assets/3e2503d7-235c-4944-b592-bd742d235447" />
 </div>
 
 <h1 align="center">💳 Strapi 5 Plugin for Stripe</h1>
@@ -25,13 +25,13 @@ A Strapi 5 plugin to manage **Stripe products and subscriptions** directly from 
 1. Copy the plugin into your Strapi project:
 
 ```bash
-npm i strapi5-plugin-stripe
+npm i strapi5-plugin-for-stripe
 ```
 
 or
 
 ```bash
-yarn add strapi5-plugin-stripe
+yarn add strapi5-plugin-for-stripe
 ```
 
 2. Restart Strapi:
@@ -93,7 +93,7 @@ Then restart Strapi.
 
 When you create the webhook in Stripe, Stripe needs an Endpoint URL (a public URL that Stripe can call).
 
-In production, it should be your Strapi webhook route, for example: `https://your-backend.com/api/strapi5-plugin-stripe/webhook`
+In production, it should be your Strapi webhook route, for example: `https://your-backend.com/api/strapi5-plugin-for-stripe/webhook`
 
 In local development, Stripe cannot call localhost directly. Use Stripe CLI instead (see below).
 
@@ -124,7 +124,7 @@ Stripe can’t reach localhost from the internet. Use the Stripe CLI to forward 
 
 ```bash
 stripe login
-stripe listen --forward-to localhost:1337/api/strapi5-plugin-stripe/webhook
+stripe listen --forward-to localhost:1337/api/strapi5-plugin-for-stripe/webhook
 ```
 
 The CLI will display a temporary signing secret: `Your webhook signing secret is whsec_...`
