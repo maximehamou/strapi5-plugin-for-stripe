@@ -191,6 +191,6 @@ The product listing page is the page where your products are displayed and where
 
 ## 📝 License
 
-This plugin is licensed under the **GPLv3** license. See the [COPYING](./COPYING) file for details.
+This plugin is licensed under the **MIT** license. See the [COPYING](./COPYING) file for details.
 
 ©2026 Maxime Hamou
