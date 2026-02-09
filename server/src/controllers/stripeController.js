@@ -127,6 +127,7 @@ const stripeController = ({ strapi }) => ({
     const {
       priceId,
       customer_email,
+      mode,
       productId,
       productName,
       metadata = {},
@@ -137,7 +138,7 @@ const stripeController = ({ strapi }) => ({
     }
 
     const session = await stripe.checkout.sessions.create({
-      mode: "payment",
+      mode: mode || "payment",
 
       line_items: [
         {
